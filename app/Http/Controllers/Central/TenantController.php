@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Central;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
+use App\Enums\TenantStatus;
 
 use Illuminate\Support\Facades\Cache;
 use App\Jobs\UpdateTenantUserCounts;
@@ -49,13 +50,18 @@ class TenantController extends Controller
         {
                 $data = $request->validate([
                         'id'     => ['required', 'alpha_dash', 'max:32', 'unique:tenants,id'],
+                        'name'   => ['required', 'string', 'max:255'],
                         'domain' => ['required', 'max:50', 'regex:/^[a-z0-9-]+$/', 'unique:domains,domain'],
                 ]);
 
                 $host = parse_url(config('app.url'), PHP_URL_HOST);
 
                 try {
-                        $tenant = Tenant::create(['id' => $data['id']]);
+                        $tenant = Tenant::create([
+                                'id' => $data['id'],
+                                'name' => $data['name'],
+                                'status' => TenantStatus::PENDING_PAYMENT,
+                        ]);
                         $tenant->domains()->create(['domain' => "{$data['domain']}.{$host}"]);
                 } catch (\Throwable $e) {
                         if (isset($tenant)) {

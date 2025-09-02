@@ -2,6 +2,8 @@
   @csrf
   <label>ID del tenant</label>
   <input name="id" required>
+  <label>Nombre</label>
+  <input name="name" required>
   <label>Subdominio</label>
   <input name="domain" required>
   <button type="submit">Crear Tenant</button>
