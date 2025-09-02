@@ -20,9 +20,9 @@ Route::middleware('auth')->group(function () {
 });
 
 foreach (config('tenancy.central_domains') as $domain) {
-	Route::domain($domain)
-	->middleware(['web'/*,'auth' si ya proteges el central*/])
-	->group(function () {
+        Route::domain($domain)
+        ->middleware(['web', 'auth'])
+        ->group(function () {
 
 		Route::redirect('/', '/admin');		
 
