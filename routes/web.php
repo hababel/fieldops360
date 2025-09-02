@@ -22,7 +22,7 @@ Route::middleware('auth')->group(function () {
 foreach (config('tenancy.central_domains') as $domain) {
         Route::domain($domain)
 
-        ->middleware(['web', 'auth', 'verified'])
+        ->middleware(['web', 'auth', 'verified', 'super-admin'])
 
         ->group(function () {
 
