@@ -37,21 +37,13 @@ Route::middleware([
 		return 'Tenant: ' . tenant('id');
 	});
 
-	Route::get('/files/{path}', function ($path) {
-		$full = Storage::disk('local')->path($path); // ← usa el disk tenant-aware
-		abort_unless(file_exists($full), 404);
-		return response()->file($full);
-	})->where('path', '.*');
+        Route::get('/files/{path}', function ($path) {
+                $path = basename($path);
+                $disk = Storage::disk('local');
+                abort_unless($disk->exists($path), 404);
+                return $disk->download($path);
+        })->where('path', '.*')->middleware('auth');
 
 	Route::get('/dashboard', [DashboardController::class, 'index'])
 		->name('dashboard');
 });
-
-Route::middleware(['web', InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class])
-	->group(function () {
-		Route::get('/debug', function () {
-			dump(DB::connection()->getDatabaseName());
-			return 'Tenant: ' . tenant('id');
-		});
-	});
-
