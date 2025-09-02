@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Central;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use App\Jobs\UpdateTenantUserCounts;
 
 class TenantController extends Controller
 {
@@ -15,16 +16,16 @@ class TenantController extends Controller
 		// Métricas globales
 		$tenantsCount = Tenant::count();
 
-		// Suma de usuarios en todas las BD de tenants
-		$usersCount = 0;
-		foreach (Tenant::all() as $tenant) {
-			try {
-				tenancy()->initialize($tenant);
-				$usersCount += User::count();
-			} finally {
-				tenancy()->end();
-			}
-		}
+                // Intentar obtener el total de usuarios desde caché para evitar
+                // iterar todas las bases de datos de los tenants en cada solicitud
+                $usersCount = Cache::get('tenants.users.count');
+
+                // Si el valor no existe, despachar un job que actualice el cache
+                // de forma asíncrona. Se devuelve 0 mientras se recalculan los datos.
+                if ($usersCount === null) {
+                        UpdateTenantUserCounts::dispatch();
+                        $usersCount = 0;
+                }
 
 		return view('central.tenants.dashboard', compact('tenantsCount', 'usersCount'));
 	}
