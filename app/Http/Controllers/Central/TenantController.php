@@ -15,10 +15,15 @@ use Illuminate\Support\Facades\Log;
 class TenantController extends Controller
 {
 
-	public function index()
-	{
-		// Métricas globales
-		$tenantsCount = Tenant::count();
+        public function __construct()
+        {
+                $this->middleware(['auth', 'verified']);
+        }
+
+        public function index()
+        {
+                // Métricas globales
+                $tenantsCount = Tenant::count();
 
                 // Intentar obtener el total de usuarios desde caché para evitar
                 // iterar todas las bases de datos de los tenants en cada solicitud
