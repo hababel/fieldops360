@@ -21,7 +21,9 @@ Route::middleware('auth')->group(function () {
 
 foreach (config('tenancy.central_domains') as $domain) {
         Route::domain($domain)
+
         ->middleware(['web', 'auth', 'verified'])
+
         ->group(function () {
 
 		Route::redirect('/', '/admin');		
