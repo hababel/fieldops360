@@ -46,12 +46,3 @@ Route::middleware([
 	Route::get('/dashboard', [DashboardController::class, 'index'])
 		->name('dashboard');
 });
-
-Route::middleware(['web', InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class])
-	->group(function () {
-		Route::get('/debug', function () {
-			dump(DB::connection()->getDatabaseName());
-			return 'Tenant: ' . tenant('id');
-		});
-	});
-
