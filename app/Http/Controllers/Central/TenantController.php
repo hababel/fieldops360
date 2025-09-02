@@ -36,8 +36,10 @@ class TenantController extends Controller
                         $usersCount = 0;
                 }
 
-		return view('central.tenants.dashboard', compact('tenantsCount', 'usersCount'));
-	}
+                $tenants = Tenant::all();
+
+                return view('central.tenants.dashboard', compact('tenantsCount', 'usersCount', 'tenants'));
+        }
 	public function create()
 	{
 		return view('central.tenants.create');
